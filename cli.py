@@ -4,7 +4,11 @@ import os
 import sys
 from app.client.auth import authenticate
 from app.client.client import AquaClient
-from app.code_repositories import retrieve_code_repositories, select_repositories_by_id
+from app.code_repositories import (
+    retrieve_code_repositories,
+    search_code_repositories,
+    select_repositories_by_id,
+)
 
 
 def main():
@@ -38,8 +42,25 @@ def main():
         "-s",
         "--search",
         type=str,
-        default=None,
         help="Optional search term to filter the repositories.",
+    )
+    # Repositories: Search code repositories
+    repositories_search = subparsers.add_parser(
+        "repositories-search",
+        help="Retrieve code repositories from the Aqua API.",
+    )
+    repositories_search.add_argument(
+        "-s",
+        "--search",
+        type=str,
+        nargs="+",
+        help="Search terms to filter the repositories. Supports multiple terms.",
+    )
+    repositories_search.add_argument(
+        "-i",
+        "--search-stdin",
+        action="store_true",
+        help="Read search terms from standard input instead of command line. Suports multiple lines of input.",
     )
     # Repositories: Select repositories
     select_repositories = subparsers.add_parser(
@@ -78,6 +99,9 @@ def main():
     elif args.command == "repositories":
         retrieve_code_repositories(search=args.search)
 
+    elif args.command == "repositories-search":
+        _cmd_search_code_repositories(args)
+
     elif args.command == "select-repositories":
         _cmd_select_repositories(args)
 
@@ -98,6 +122,18 @@ def _cmd_authenticate(args):
         api_secret = input("Enter your API Secret: ")
 
     authenticate(api_key, api_secret, args.token_file, args.ca_cert)
+
+
+def _cmd_search_code_repositories(args):
+    if args.search_stdin:
+        search_terms = []
+        for line in sys.stdin:
+            line = line.strip()
+            if line:
+                search_terms.append(line)
+        args.search = search_terms
+
+    search_code_repositories(search=args.search)
 
 
 def _cmd_select_repositories(args):

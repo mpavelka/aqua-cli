@@ -1,4 +1,5 @@
 import pprint
+import sys
 from app.client.code_repositories.retrieve import (
     retrieve_code_repositories as c_retrieve_code_repositories,
 )
@@ -7,7 +8,7 @@ from app.formatter.table_formatter import TableFormatter
 
 
 def retrieve_code_repositories(
-    search=None,
+    search: str,
     formatter=TableFormatter,
     columns=[
         "fullName",
@@ -23,6 +24,30 @@ def retrieve_code_repositories(
     )
     repositories = response.json().get("repositories", [])
     formatter(columns).print_formatted(repositories)
+
+
+def search_code_repositories(
+    search: list[str],
+    formatter=TableFormatter,
+    columns=[
+        "fullName",
+        "id",
+        "isArchived",
+        "isPrivate",
+        "isSelected",
+        "lastPush",
+    ],
+):
+    results = []
+    for term in search:
+        print(f"Searching: {term}", file=sys.stderr)
+        response = c_retrieve_code_repositories(
+            search=term,
+        )
+        repositories = response.json().get("repositories", [])
+        results.extend(repositories)
+
+    formatter(columns).print_formatted(results)
 
 
 def select_repositories_by_id(

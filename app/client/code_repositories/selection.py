@@ -1,5 +1,4 @@
 from app.client.client import AquaClient
-from app.formatter.table_formatter import TableFormatter
 
 
 def select_code_repositories(
