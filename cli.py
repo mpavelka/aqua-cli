@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 import argparse
 import os
+import sys
 from app.client.auth import authenticate
 from app.client.client import AquaClient
-from app.code_repositories import retrieve_code_repositories
+from app.code_repositories import retrieve_code_repositories, select_repositories_by_id
 
 
 def main():
@@ -21,7 +22,7 @@ def main():
         "--ca-cert",
         type=str,
         default="",
-        help="Path to the CA certificate file for secure connections."
+        help="Path to the CA certificate file for secure connections.",
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
@@ -40,6 +41,28 @@ def main():
         default=None,
         help="Optional search term to filter the repositories.",
     )
+    # Repositories: Select repositories
+    select_repositories = subparsers.add_parser(
+        "select-repositories",
+        help="Add code repositories to Aqua by their IDs.",
+    )
+    select_repositories.add_argument(
+        "--stdin",
+        action="store_true",
+        help="Read repository IDs from standard input if not provided as arguments.",
+    )
+    select_repositories.add_argument(
+        "--source",
+        type=str,
+        default=None,
+        help="Source from which to select repositories (default: gitlab_server).",
+    )
+    select_repositories.add_argument(
+        "repository_ids",
+        type=str,
+        nargs="*",
+        help="List of repository IDs to add to Aqua.",
+    )
 
     args = parser.parse_args()
 
@@ -50,10 +73,13 @@ def main():
 
     # Commands
     if args.command == "authenticate":
-        return _cmd_authenticate(args)
+        _cmd_authenticate(args)
 
     elif args.command == "repositories":
         retrieve_code_repositories(search=args.search)
+
+    elif args.command == "select-repositories":
+        _cmd_select_repositories(args)
 
     else:
         parser.print_help()
@@ -72,6 +98,22 @@ def _cmd_authenticate(args):
         api_secret = input("Enter your API Secret: ")
 
     authenticate(api_key, api_secret, args.token_file, args.ca_cert)
+
+
+def _cmd_select_repositories(args):
+    if args.stdin:
+        repository_ids = []
+        for line in sys.stdin:
+            line = line.strip()
+            if line:
+                repository_ids.append(line)
+    else:
+        repository_ids = args.repository_ids
+
+    select_repositories_by_id(
+        source=args.source,
+        repository_ids=repository_ids,
+    )
 
 
 if __name__ == "__main__":
