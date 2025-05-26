@@ -32,7 +32,7 @@ def ensure_auth(token_file_path):
         print(f"Error loading token: {e}")
 
 
-def authenticate(api_key, api_secret, token_file_path):
+def authenticate(api_key, api_secret, token_file_path, ca_cert=None):
 
     # Generate timestamp
     timestamp = str(int(time.time()))
@@ -68,6 +68,7 @@ def authenticate(api_key, api_secret, token_file_path):
         endpoint,
         headers=headers,
         data=post_body_json,
+        verify=ca_cert if ca_cert else True,
     )
 
     # Parse the response

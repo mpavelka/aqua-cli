@@ -17,6 +17,12 @@ def main():
         default=".aqua_token",
         help="Path to the file where the authentication token will be stored.",
     )
+    parser.add_argument(
+        "--ca-cert",
+        type=str,
+        default="",
+        help="Path to the CA certificate file for secure connections."
+    )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     # Authenticate
@@ -38,6 +44,8 @@ def main():
     args = parser.parse_args()
 
     # Set up AquaClient
+    if args.ca_cert:
+        AquaClient.verify = args.ca_cert
     AquaClient.set_token_file_path(args.token_file)
 
     # Commands
@@ -63,7 +71,7 @@ def _cmd_authenticate(args):
     if not api_secret:
         api_secret = input("Enter your API Secret: ")
 
-    authenticate(api_key, api_secret, args.token_file)
+    authenticate(api_key, api_secret, args.token_file, args.ca_cert)
 
 
 if __name__ == "__main__":
