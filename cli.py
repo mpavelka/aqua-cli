@@ -195,7 +195,7 @@ def main():
 
     elif args.command == "repositories-retrieve-selected":
         _cmd_repositories_retrieve_selected(args)
-    
+
     elif args.command == "repositories-add-labels":
         _cmd_repositories_add_labels(args)
 
@@ -281,6 +281,7 @@ def _cmd_repositories_retrieve_selected(args):
             keys=args.keys,
         )
 
+
 def _cmd_repositories_add_labels(args):
     if args.ids_stdin and args.labels_stdin:
         print("Error: Cannot read both repository IDs and labels from stdin.")
@@ -299,13 +300,16 @@ def _cmd_repositories_add_labels(args):
     if not repository_ids or not label_names:
         print("Error: Both repository IDs and label names must be provided.")
         sys.exit(1)
-    
+
+    print(
+        f"Adding labels {label_names} to repositories {repository_ids}", file=sys.stderr
+    )
     repositories_add_labels(
         label_names=label_names,
         repository_ids=repository_ids,
         formatter=_get_formatter(args),
-        keys=args.keys,
     )
+
 
 def _get_lines_from_stdin():
     lines = []
