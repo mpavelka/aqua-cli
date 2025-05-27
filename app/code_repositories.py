@@ -96,12 +96,18 @@ def repositories_retrieve_selected_by_names(
     formatter=TableFormatter,
     keys=[],
 ):
+    results = []
     for name in names:
-        repositories_retrieve_selected(
+        print(f"Searching: {name}", file=sys.stderr)
+        response = codesec_api_v1_repositories(
             name=name,
-            formatter=formatter,
-            keys=keys,
+            disable_pagination=True,
         )
+        results.extend(response.json().get("data", []))
+    formatter().print_formatted(
+        results,
+        keys,
+    )
 
 
 def repositories_add_labels(
