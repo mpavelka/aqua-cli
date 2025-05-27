@@ -64,15 +64,14 @@ def main():
         help="Retrieve code repositories from the Aqua API.",
     )
     repositories_search.add_argument(
-        "-s",
-        "--search",
+        "search",
         type=str,
-        nargs="+",
+        nargs="*",
         help="Search terms to filter the repositories. Supports multiple terms.",
     )
     repositories_search.add_argument(
         "-i",
-        "--search-stdin",
+        "--stdin",
         action="store_true",
         help="Read search terms from standard input instead of command line. Suports multiple lines of input.",
     )
