@@ -1,6 +1,7 @@
 import sys
 from app.client.code_repositories.retrieve import (
     retrieve_code_repositories as c_retrieve_code_repositories,
+    codesec_api_v1_repositories,
 )
 from app.client.code_repositories.selection import select_code_repositories
 from app.formatter.table_formatter import TableFormatter
@@ -70,3 +71,32 @@ def select_repositories_by_id(
         response_json["addedRepositoriesMetadata"],
         columns,
     )
+
+
+def repositories_retrieve_selected(
+    ids: list[str] | None = None,
+    name: str | None = None,
+    formatter=TableFormatter,
+    columns=None,
+):
+    response = codesec_api_v1_repositories(
+        ids=ids,
+        name=name,
+        disable_pagination=True,
+    )
+    formatter().print_formatted(
+        response.json().get("data", []),
+        columns,
+    )
+
+def repositories_retrieve_selected_by_names(
+    names: list[str],
+    formatter=TableFormatter,
+    columns=None,
+):
+    for name in names:
+        repositories_retrieve_selected(
+            name=name,
+            formatter=formatter,
+            columns=columns,
+        )

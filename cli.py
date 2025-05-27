@@ -96,6 +96,40 @@ def main():
         nargs="*",
         help="List of repository IDs to add to Aqua.",
     )
+    # Repositories: Retrieve selected code repositories
+    repositories = subparsers.add_parser(
+        "repositories-retrieve-selected",
+        help="Retrieve repositories that have been previously selected.",
+    )
+    repositories.add_argument(
+        "-i",
+        "--ids",
+        type=str,
+        nargs="*",
+        help="IDs of repositories to retrieve.",
+    )
+    repositories.add_argument(
+        "-n",
+        "--name",
+        type=str,
+        help="Name of the repository to retrieve.",
+    )
+    repositories.add_argument(
+        "--stdin",
+        action="store_true",
+        help="Read IDs from stdin.",
+    )
+    repositories.add_argument(
+        "--names",
+        type=str,
+        nargs="*",
+        help="Names of repositories to filter. If provided, all other search parameters are ignored.",
+    )
+    repositories.add_argument(
+        "--names-stdin",
+        action="store_true",
+        help="Read names from stdin. If provided, all other search parameters are ignored.",
+    )
 
     args = parser.parse_args()
 
@@ -119,6 +153,9 @@ def main():
 
     elif args.command == "select-repositories":
         _cmd_select_repositories(args)
+
+    elif args.command == "repositories-retrieve-selected":
+        _cmd_repositories_retrieve_selected(args)
 
     else:
         parser.print_help()
@@ -175,6 +212,27 @@ def _cmd_select_repositories(args):
         repository_ids=repository_ids,
         formatter=_get_formatter(args),
     )
+
+
+def _cmd_repositories_retrieve_selected(args):
+    if args.names_stdin:
+        repositories_retrieve_selected_by_names(
+            names=_get_lines_from_stdin(),
+            formatter=_get_formatter(args),
+        )
+    elif args.names:
+        repositories_retrieve_selected_by_names(
+            names=args.names,
+            formatter=_get_formatter(args),
+        )
+    else:
+        if args.stdin:
+            args.ids = _get_lines_from_stdin()
+        repositories_retrieve_selected(
+            ids=args.ids,
+            name=args.name,
+            formatter=_get_formatter(args),
+        )
 
 
 def _get_lines_from_stdin():
