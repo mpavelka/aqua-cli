@@ -154,12 +154,8 @@ def _cmd_authenticate(args):
 
 
 def _cmd_search_code_repositories(args):
-    if args.search_stdin:
-        search_terms = []
-        for line in sys.stdin:
-            line = line.strip()
-            if line:
-                search_terms.append(line)
+    if args.stdin:
+        search_terms = _get_lines_from_stdin()
         args.search = search_terms
 
     search_code_repositories(
@@ -170,11 +166,7 @@ def _cmd_search_code_repositories(args):
 
 def _cmd_select_repositories(args):
     if args.stdin:
-        repository_ids = []
-        for line in sys.stdin:
-            line = line.strip()
-            if line:
-                repository_ids.append(line)
+        repository_ids = _get_lines_from_stdin()
     else:
         repository_ids = args.repository_ids
 
@@ -183,6 +175,15 @@ def _cmd_select_repositories(args):
         repository_ids=repository_ids,
         formatter=_get_formatter(args),
     )
+
+
+def _get_lines_from_stdin():
+    lines = []
+    for line in sys.stdin:
+        line = line.strip()
+        if line:
+            lines.append(line)
+    return lines
 
 
 if __name__ == "__main__":
