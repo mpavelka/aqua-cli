@@ -5,6 +5,7 @@ import sys
 from app.client.auth import authenticate
 from app.client.client import AquaClient
 from app.code_repositories import (
+    repositories_add_labels,
     retrieve_code_repositories,
     search_code_repositories,
     select_repositories_by_id,
@@ -98,38 +99,67 @@ def main():
         help="List of repository IDs to add to Aqua.",
     )
     # Repositories: Retrieve selected code repositories
-    repositories = subparsers.add_parser(
+    repositories_retrieve_selected = subparsers.add_parser(
         "repositories-retrieve-selected",
         help="Retrieve repositories that have been previously selected.",
     )
-    repositories.add_argument(
+    repositories_retrieve_selected.add_argument(
         "-i",
         "--ids",
         type=str,
         nargs="*",
         help="IDs of repositories to retrieve.",
     )
-    repositories.add_argument(
+    repositories_retrieve_selected.add_argument(
         "-n",
         "--name",
         type=str,
         help="Name of the repository to retrieve.",
     )
-    repositories.add_argument(
+    repositories_retrieve_selected.add_argument(
         "--stdin",
         action="store_true",
         help="Read IDs from stdin.",
     )
-    repositories.add_argument(
+    repositories_retrieve_selected.add_argument(
         "--names",
         type=str,
         nargs="*",
         help="Names of repositories to filter. If provided, all other search parameters are ignored.",
     )
-    repositories.add_argument(
+    repositories_retrieve_selected.add_argument(
         "--names-stdin",
         action="store_true",
         help="Read names from stdin. If provided, all other search parameters are ignored.",
+    )
+    # Repositories: Add labels
+    repositories_add_label = subparsers.add_parser(
+        "repositories-add-labels",
+        help="Add labels to code repositories.",
+    )
+    repositories_add_label.add_argument(
+        "-i",
+        "--ids",
+        type=str,
+        nargs="*",
+        help="IDs of repositories to add the labels to.",
+    )
+    repositories_add_label.add_argument(
+        "--ids-stdin",
+        action="store_true",
+        help="Read repository IDs from standard input.",
+    )
+    repositories_add_label.add_argument(
+        "-l",
+        "--labels",
+        type=str,
+        nargs="*",
+        help="List of labels to add to the repositories.",
+    )
+    repositories_add_label.add_argument(
+        "--labels-stdin",
+        action="store_true",
+        help="Read labels from standard input.",
     )
 
     args = parser.parse_args()
@@ -157,6 +187,9 @@ def main():
 
     elif args.command == "repositories-retrieve-selected":
         _cmd_repositories_retrieve_selected(args)
+    
+    elif args.command == "repositories-add-labels":
+        _cmd_repositories_add_labels(args)
 
     else:
         parser.print_help()
@@ -235,6 +268,30 @@ def _cmd_repositories_retrieve_selected(args):
             formatter=_get_formatter(args),
         )
 
+def _cmd_repositories_add_labels(args):
+    if args.ids_stdin and args.labels_stdin:
+        print("Error: Cannot read both repository IDs and labels from stdin.")
+        sys.exit(1)
+
+    if args.ids_stdin:
+        repository_ids = _get_lines_from_stdin()
+    else:
+        repository_ids = args.ids
+
+    if args.labels_stdin:
+        label_names = _get_lines_from_stdin()
+    else:
+        label_names = args.labels
+
+    if not repository_ids or not label_names:
+        print("Error: Both repository IDs and label names must be provided.")
+        sys.exit(1)
+    
+    repositories_add_labels(
+        label_names=label_names,
+        repository_ids=repository_ids,
+        formatter=_get_formatter(args),
+    )
 
 def _get_lines_from_stdin():
     lines = []

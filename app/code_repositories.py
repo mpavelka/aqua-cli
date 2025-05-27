@@ -1,4 +1,5 @@
 import sys
+from app.client.code_repositories.labels import codesec_api_v1_repositories_label
 from app.client.code_repositories.retrieve import (
     retrieve_code_repositories as c_retrieve_code_repositories,
     codesec_api_v1_repositories,
@@ -89,6 +90,7 @@ def repositories_retrieve_selected(
         columns,
     )
 
+
 def repositories_retrieve_selected_by_names(
     names: list[str],
     formatter=TableFormatter,
@@ -100,3 +102,17 @@ def repositories_retrieve_selected_by_names(
             formatter=formatter,
             columns=columns,
         )
+
+
+def repositories_add_labels(
+    label_names: list[str],
+    repository_ids: list[str],
+    delete_old_labels: bool = False,
+    formatter=TableFormatter,
+):
+    response = codesec_api_v1_repositories_label(
+        label_names=label_names,
+        repository_ids=repository_ids,
+        delete_old_labels=delete_old_labels,
+    )
+    formatter().print_formatted([{"message": response.text}], ["message"])
