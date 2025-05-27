@@ -8,6 +8,8 @@ from app.code_repositories import (
     retrieve_code_repositories,
     search_code_repositories,
     select_repositories_by_id,
+    repositories_retrieve_selected,
+    repositories_retrieve_selected_by_names,
 )
 from app.formatter.csv_formatter import CSVFormatter, CSVNoHeaderFormatter
 from app.formatter.table_formatter import TableFormatter
