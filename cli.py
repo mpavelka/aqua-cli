@@ -43,6 +43,14 @@ def main():
         action="store_true",
         help="Do not print the header in the formatted output.",
     )
+    parser.add_argument(
+        "--keys",
+        "-k",
+        type=str,
+        nargs="*",
+        default=[],
+        help="List of keys to include in the output. If not provided, default keys will be included.",
+    )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     # Authenticate
@@ -232,6 +240,7 @@ def _cmd_search_code_repositories(args):
     search_code_repositories(
         search=args.search,
         formatter=_get_formatter(args),
+        keys=args.keys,
     )
 
 
@@ -245,6 +254,7 @@ def _cmd_select_repositories(args):
         source=args.source,
         repository_ids=repository_ids,
         formatter=_get_formatter(args),
+        keys=args.keys,
     )
 
 
@@ -253,11 +263,13 @@ def _cmd_repositories_retrieve_selected(args):
         repositories_retrieve_selected_by_names(
             names=_get_lines_from_stdin(),
             formatter=_get_formatter(args),
+            keys=args.keys,
         )
     elif args.names:
         repositories_retrieve_selected_by_names(
             names=args.names,
             formatter=_get_formatter(args),
+            keys=args.keys,
         )
     else:
         if args.stdin:
@@ -266,6 +278,7 @@ def _cmd_repositories_retrieve_selected(args):
             ids=args.ids,
             name=args.name,
             formatter=_get_formatter(args),
+            keys=args.keys,
         )
 
 def _cmd_repositories_add_labels(args):
@@ -291,6 +304,7 @@ def _cmd_repositories_add_labels(args):
         label_names=label_names,
         repository_ids=repository_ids,
         formatter=_get_formatter(args),
+        keys=args.keys,
     )
 
 def _get_lines_from_stdin():

@@ -6,12 +6,10 @@ from .abc import Formatter
 
 class CSVFormatter(Formatter):
 
-    def print_formatted(self, data, keys: list[str] | None = None):
+    def print_formatted(self, data, keys: list[str] = []):
         # Print all keys if not provided
-        if keys is None:
-            keys = data[0].keys() if data else []
         if len(keys) == 0:
-            return
+            keys = data[0].keys() if data else []
 
         writer = csv.writer(sys.stdout, quoting=csv.QUOTE_MINIMAL)
 
@@ -24,12 +22,10 @@ class CSVFormatter(Formatter):
 
 class CSVNoHeaderFormatter(Formatter):
 
-    def print_formatted(self, data, keys: list[str] | None = None):
+    def print_formatted(self, data, keys: list[str] = []):
         # Print all keys if not provided
-        if keys is None:
-            keys = data[0].keys() if data else []
         if len(keys) == 0:
-            return
+            keys = data[0].keys() if data else []
 
         writer = csv.writer(sys.stdout, quoting=csv.QUOTE_MINIMAL)
 

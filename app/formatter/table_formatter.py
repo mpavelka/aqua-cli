@@ -3,12 +3,10 @@ from .abc import Formatter
 
 class TableFormatter(Formatter):
 
-    def print_formatted(self, data, keys: list[str] | None = None):
+    def print_formatted(self, data, keys: list[str] = []):
         # Print all keys if not provided
-        if keys is None:
-            keys = data[0].keys() if data else []
         if len(keys) == 0:
-            return
+            keys = data[0].keys() if data else []
 
         col_widths = self._calculate_col_widths(data, keys)
 

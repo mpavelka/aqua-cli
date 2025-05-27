@@ -6,7 +6,7 @@ class Formatter(abc.ABC):
     """
 
     @abc.abstractmethod
-    def print_formatted(self, data, keys: list[str] | None = None):
+    def print_formatted(self, data, keys: list[str] = []):
         """
         Format the given data.
 
