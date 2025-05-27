@@ -9,6 +9,8 @@ from app.code_repositories import (
     search_code_repositories,
     select_repositories_by_id,
 )
+from app.formatter.csv_formatter import CSVFormatter, CSVNoHeaderFormatter
+from app.formatter.table_formatter import TableFormatter
 
 
 def main():
@@ -27,6 +29,16 @@ def main():
         type=str,
         default="",
         help="Path to the CA certificate file for secure connections.",
+    )
+    parser.add_argument(
+        "--csv",
+        action="store_true",
+        help="Output results in CSV format instead of the default table format.",
+    )
+    parser.add_argument(
+        "--no-header",
+        action="store_true",
+        help="Do not print the header in the formatted output.",
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
@@ -97,7 +109,10 @@ def main():
         _cmd_authenticate(args)
 
     elif args.command == "repositories":
-        retrieve_code_repositories(search=args.search)
+        retrieve_code_repositories(
+            search=args.search,
+            formatter=_get_formatter(args),
+        )
 
     elif args.command == "repositories-search":
         _cmd_search_code_repositories(args)
@@ -108,6 +123,15 @@ def main():
     else:
         parser.print_help()
         return 1
+
+
+def _get_formatter(args):
+    if args.csv and args.no_header:
+        return CSVNoHeaderFormatter
+    elif args.csv:
+        return CSVFormatter
+    else:
+        return TableFormatter
 
 
 def _cmd_authenticate(args):
@@ -121,7 +145,12 @@ def _cmd_authenticate(args):
     if not api_secret:
         api_secret = input("Enter your API Secret: ")
 
-    authenticate(api_key, api_secret, args.token_file, args.ca_cert)
+    authenticate(
+        api_key,
+        api_secret,
+        args.token_file,
+        args.ca_cert,
+    )
 
 
 def _cmd_search_code_repositories(args):
@@ -133,7 +162,10 @@ def _cmd_search_code_repositories(args):
                 search_terms.append(line)
         args.search = search_terms
 
-    search_code_repositories(search=args.search)
+    search_code_repositories(
+        search=args.search,
+        formatter=_get_formatter(args),
+    )
 
 
 def _cmd_select_repositories(args):
@@ -149,6 +181,7 @@ def _cmd_select_repositories(args):
     select_repositories_by_id(
         source=args.source,
         repository_ids=repository_ids,
+        formatter=_get_formatter(args),
     )
 
 
