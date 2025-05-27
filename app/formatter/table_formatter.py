@@ -1,34 +1,45 @@
-class TableFormatter:
-    def __init__(self, keys):
-        self._keys = keys
+from .abc import Formatter
 
-    def print_formatted(self, rows):
 
-        all_rows = [self._keys]
+class TableFormatter(Formatter):
 
-        # Extend all rows with row values
-        for row in rows:
-            new_row = [row.get(column, "") for column in self._keys]
-            all_rows.append(new_row)
+    def print_formatted(self, data, keys: list[str] | None = None):
+        # Print all keys if not provided
+        if keys is None:
+            keys = data[0].keys() if data else []
+        if len(keys) == 0:
+            return
 
-        # Calculate the maximum width for each column
-        col_widths = [0] * len(self._keys)
-        for row in all_rows:
-            for i, item in enumerate(row):
-                col_widths[i] = max(col_widths[i], len(str(item)))
+        col_widths = self._calculate_col_widths(data, keys)
 
-        for row in all_rows:
-            formatted_row = self._format_row(row, col_widths)
+        # Print header
+        header = self._format_row(keys, col_widths)
+        print(header)
+        # Print separator
+        print("-" * len(header))
+        # Print each row
+        for row in data:
+            formatted_row = self._format_row([row[key] for key in keys], col_widths)
             print(formatted_row)
 
+    def _calculate_col_widths(self, data, keys: list[str]) -> list[int]:
+        # Widhth of each column based on the keys
+        col_widths = [0] * len(keys)
+        for i, item in enumerate(keys):
+            col_widths[i] = max(col_widths[i], len(str(item)))
+
+        # Maximum width for each column based on the data
+        for row in data:
+            for i, key in enumerate(keys):
+                col_widths[i] = max(col_widths[i], len(str(row.get(key, ""))))
+
+        return col_widths
+
     def _format_row(self, row, col_widths=None):
-        if not row:
-            return "No data available."
-
         if col_widths is None:
-            col_widths = [max(len(str(item)) for item in row)] * len(row)
-
-        formatted_row = " | ".join(
-            str(item).ljust(width) for item, width in zip(row, col_widths)
-        )
+            formatted_row = " | ".join(str(item) for item in row)
+        else:
+            formatted_row = " | ".join(
+                str(item).ljust(width) for item, width in zip(row, col_widths)
+            )
         return formatted_row

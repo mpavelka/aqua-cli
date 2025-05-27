@@ -1,4 +1,3 @@
-import pprint
 import sys
 from app.client.code_repositories.retrieve import (
     retrieve_code_repositories as c_retrieve_code_repositories,
@@ -23,7 +22,7 @@ def retrieve_code_repositories(
         search=search,
     )
     repositories = response.json().get("repositories", [])
-    formatter(columns).print_formatted(repositories)
+    formatter().print_formatted(repositories, columns)
 
 
 def search_code_repositories(
@@ -47,7 +46,10 @@ def search_code_repositories(
         repositories = response.json().get("repositories", [])
         results.extend(repositories)
 
-    formatter(columns).print_formatted(results)
+    formatter().print_formatted(
+        results,
+        columns,
+    )
 
 
 def select_repositories_by_id(
@@ -64,4 +66,7 @@ def select_repositories_by_id(
         include_ids=repository_ids,
     )
     response_json = response.json()
-    formatter(columns).print_formatted(response_json["addedRepositoriesMetadata"])
+    formatter().print_formatted(
+        response_json["addedRepositoriesMetadata"],
+        columns,
+    )
