@@ -47,9 +47,7 @@ def main():
         "--keys",
         "-k",
         type=str,
-        nargs="*",
-        default=[],
-        help="List of keys to include in the output. If not provided, default keys will be included.",
+        help="Comma-separated list of keys to include in the output. If not provided, default keys will be included.",
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
@@ -213,6 +211,10 @@ def _get_formatter(args):
         return TableFormatter
 
 
+def _get_keys(args):
+    return args.keys.split(",") if args.keys else []
+
+
 def _cmd_authenticate(args):
     # Read API_KEY from envvars
     api_key = os.getenv("AQUA_API_KEY")
@@ -240,7 +242,7 @@ def _cmd_search_code_repositories(args):
     search_code_repositories(
         search=args.search,
         formatter=_get_formatter(args),
-        keys=args.keys,
+        keys=_get_keys(args),
     )
 
 
@@ -254,7 +256,7 @@ def _cmd_select_repositories(args):
         source=args.source,
         repository_ids=repository_ids,
         formatter=_get_formatter(args),
-        keys=args.keys,
+        keys=_get_keys(args),
     )
 
 
@@ -263,13 +265,13 @@ def _cmd_repositories_retrieve_selected(args):
         repositories_retrieve_selected_by_names(
             names=_get_lines_from_stdin(),
             formatter=_get_formatter(args),
-            keys=args.keys,
+            keys=_get_keys(args),
         )
     elif args.names:
         repositories_retrieve_selected_by_names(
             names=args.names,
             formatter=_get_formatter(args),
-            keys=args.keys,
+            keys=_get_keys(args),
         )
     else:
         if args.stdin:
@@ -278,7 +280,7 @@ def _cmd_repositories_retrieve_selected(args):
             ids=args.ids,
             name=args.name,
             formatter=_get_formatter(args),
-            keys=args.keys,
+            keys=_get_keys(args),
         )
 
 
