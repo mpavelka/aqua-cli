@@ -14,6 +14,10 @@ from app.code_repositories import (
 )
 from app.formatter.csv_formatter import CSVFormatter, CSVNoHeaderFormatter
 from app.formatter.table_formatter import TableFormatter
+from commands import CommandsRegistry
+from commands.workload_protection import (
+    register_commands as register_commands_workload_protection,
+)
 
 
 def main():
@@ -168,6 +172,9 @@ def main():
         help="Read labels from standard input.",
     )
 
+    command_registry = CommandsRegistry(subparsers)
+    register_commands_workload_protection(command_registry)
+
     args = parser.parse_args()
 
     # Set up AquaClient
@@ -175,7 +182,6 @@ def main():
         AquaClient.verify = args.ca_cert
     AquaClient.set_token_file_path(args.token_file)
 
-    # Commands
     if args.command == "authenticate":
         _cmd_authenticate(args)
 
@@ -198,8 +204,12 @@ def main():
         _cmd_repositories_add_labels(args)
 
     else:
-        parser.print_help()
-        return 1
+        command = command_registry.get_command(args.command)
+        if command:
+            command.run(args)
+        else:
+            parser.print_help()
+            return 1
 
 
 def _get_formatter(args):
