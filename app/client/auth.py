@@ -42,7 +42,7 @@ def authenticate(api_key, api_secret, token_file_path, ca_cert=None):
     method = "POST"
 
     # Define the body of the POST request
-    post_body = {"validity": 240, "allowed_endpoints": ["GET"]}
+    post_body = {"validity": 20*60, "allowed_endpoints": ["GET"]}
     post_body_json = json.dumps(post_body, separators=(",", ":")).strip()
 
     # Create the string to sign
