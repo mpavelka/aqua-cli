@@ -1,4 +1,8 @@
 import abc
+import sys
+
+from app.formatter.csv_formatter import CSVFormatter, CSVNoHeaderFormatter
+from app.formatter.table_formatter import TableFormatter
 
 
 class CommandsRegistry:
@@ -41,3 +45,22 @@ class Command(abc.ABC):
     def run(self, args):
         """Run the command with the provided arguments."""
         pass
+
+    def get_lines_from_stdin(self):
+        lines = []
+        for line in sys.stdin:
+            line = line.strip()
+            if line:
+                lines.append(line)
+        return lines
+    
+    def get_arg_keys(self, args):
+        return args.keys.split(",") if args.keys else []
+    
+    def get_formatter(self, args):
+        if args.csv and args.no_header:
+            return CSVNoHeaderFormatter
+        elif args.csv:
+            return CSVFormatter
+        else:
+            return TableFormatter
