@@ -1,5 +1,5 @@
 import sys
-from app.client.code_repositories.labels import codesec_api_v1_repositories_label
+from app.client.code_repositories.labels import codesec_api_v1_repositories_label, delete_codesec_api_v1_repositories_labels
 from app.client.code_repositories.retrieve import (
     retrieve_code_repositories as c_retrieve_code_repositories,
     codesec_api_v1_repositories,
@@ -120,5 +120,16 @@ def repositories_add_labels(
         label_names=label_names,
         repository_ids=repository_ids,
         delete_old_labels=delete_old_labels,
+    )
+    formatter().print_formatted([{"message": response.text}], ["message"])
+
+def repositories_delete_label(
+    label_name: str,
+    repository_ids: list[str],
+    formatter=TableFormatter,
+):
+    response = delete_codesec_api_v1_repositories_labels(
+        label_name=label_name,
+        repository_ids=repository_ids,
     )
     formatter().print_formatted([{"message": response.text}], ["message"])

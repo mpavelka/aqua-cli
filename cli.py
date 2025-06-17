@@ -18,6 +18,9 @@ from commands import CommandsRegistry
 from commands.workload_protection import (
     register_commands as register_commands_workload_protection,
 )
+from commands.code_repositories.labels import (
+    register_commands as register_commands_code_repositories_labels,
+)
 
 
 def main():
@@ -144,7 +147,7 @@ def main():
     )
     # Repositories: Add labels
     repositories_add_label = subparsers.add_parser(
-        "repositories-add-labels",
+        "repositories.labels.add",
         help="Add labels to code repositories.",
     )
     repositories_add_label.add_argument(
@@ -174,6 +177,7 @@ def main():
 
     command_registry = CommandsRegistry(subparsers)
     register_commands_workload_protection(command_registry)
+    register_commands_code_repositories_labels(command_registry)
 
     args = parser.parse_args()
 
@@ -200,7 +204,7 @@ def main():
     elif args.command == "repositories-retrieve-selected":
         _cmd_repositories_retrieve_selected(args)
 
-    elif args.command == "repositories-add-labels":
+    elif args.command == "repositories.labels.add":
         _cmd_repositories_add_labels(args)
 
     else:

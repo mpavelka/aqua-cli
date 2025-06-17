@@ -32,7 +32,7 @@ def codesec_api_v1_repositories(
         params["name"] = name
     if ids is not None:
         params["ids"] = ids
-    
+
     response = AquaClient.get("/codesec/api/v1/repositories", params=params)
     if response.status_code != 200:
         raise Exception(f"Error retrieving code repositories: {response.text}")

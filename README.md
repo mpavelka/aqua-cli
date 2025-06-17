@@ -10,5 +10,5 @@ REPOSITORY_NAMES="
 foobar/foobar-be
 foobar/foobar-fe
 "
-echo "$REPOSITORY_NAMES" | python3 ./cli.py -k id --csv --no-header repositories-retrieve-selected --names-stdin | python3 ./cli.py repositories-add-labels --ids-stdin -l foobar
+echo "$REPOSITORY_NAMES" | python3 ./cli.py -k id --csv --no-header repositories-retrieve-selected --names-stdin | python3 ./cli.py repositories.labels.add --ids-stdin -l foobar
 ```
